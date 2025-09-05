@@ -8,38 +8,7 @@ import Icon from '@/components/ui/icon';
 const Index = () => {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
-
-  // Пример данных расписания
-  const schedule = [
-    {
-      time: "8:30-10:00",
-      subject: "Математика",
-      room: "Аудитория 205",
-      teacher: "Иванов И.И.",
-      type: "лекция"
-    },
-    {
-      time: "10:15-11:45",
-      subject: "Физика",
-      room: "Аудитория 301",
-      teacher: "Петров П.П.",
-      type: "практика"
-    },
-    {
-      time: "12:00-13:30",
-      subject: "Программирование",
-      room: "Компьютерный класс 15",
-      teacher: "Сидоров С.С.",
-      type: "лабораторная"
-    },
-    {
-      time: "14:00-15:30",
-      subject: "Английский язык",
-      room: "Аудитория 102",
-      teacher: "Johnson M.",
-      type: "практика"
-    }
-  ];
+  const [hasSchedule, setHasSchedule] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -65,15 +34,6 @@ const Index = () => {
     const files = Array.from(e.target.files || []);
     const fileNames = files.map(file => file.name);
     setUploadedFiles(prev => [...prev, ...fileNames]);
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'лекция': return 'bg-blue-100 text-blue-800';
-      case 'практика': return 'bg-green-100 text-green-800';
-      case 'лабораторная': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
   };
 
   return (
@@ -141,7 +101,7 @@ const Index = () => {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Занятий сегодня</p>
-                      <p className="text-2xl font-bold text-gray-900">4</p>
+                      <p className="text-2xl font-bold text-gray-900">0</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -176,39 +136,139 @@ const Index = () => {
           {/* Расписание */}
           <TabsContent value="schedule" id="schedule">
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Расписание занятий</h2>
-                <p className="text-gray-600">Актуальное расписание для группы 7Т1</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Расписание занятий</h2>
+                  <p className="text-gray-600">Управление расписанием для группы 7Т1</p>
+                </div>
+                <Button 
+                  onClick={() => setHasSchedule(true)}
+                  className="shrink-0"
+                >
+                  <Icon name="Edit" className="w-4 h-4 mr-2" />
+                  Изменить расписание
+                </Button>
               </div>
 
-              <div className="grid gap-4">
-                {schedule.map((lesson, index) => (
-                  <Card key={index} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                        <div className="flex items-start space-x-4">
-                          <div className="flex flex-col items-center bg-primary/10 rounded-lg p-3 min-w-[80px]">
-                            <span className="text-xs font-medium text-primary">Время</span>
-                            <span className="text-sm font-bold text-primary">{lesson.time}</span>
-                          </div>
-                          <div className="space-y-1">
-                            <h3 className="font-semibold text-lg text-gray-900">{lesson.subject}</h3>
-                            <div className="flex items-center space-x-2 text-gray-600">
-                              <Icon name="MapPin" className="w-4 h-4" />
-                              <span className="text-sm">{lesson.room}</span>
+              {/* Панель настройки */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Icon name="Settings" className="w-5 h-5" />
+                    <span>Панель управления</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Настройки и инструменты для управления расписанием группы
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Основные действия */}
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-3">Основные действия</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <Button variant="outline" className="justify-start">
+                        <Icon name="Plus" className="w-4 h-4 mr-2" />
+                        Добавить занятие
+                      </Button>
+                      <Button variant="outline" className="justify-start">
+                        <Icon name="Calendar" className="w-4 h-4 mr-2" />
+                        Календарный вид
+                      </Button>
+                      <Button variant="outline" className="justify-start">
+                        <Icon name="Download" className="w-4 h-4 mr-2" />
+                        Экспорт расписания
+                      </Button>
+                      <Button variant="outline" className="justify-start">
+                        <Icon name="Trash2" className="w-4 h-4 mr-2" />
+                        Очистить всё
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Настройки уведомлений */}
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-3">Уведомления</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Icon name="Bell" className="w-5 h-5 text-gray-500" />
+                            <div>
+                              <p className="font-medium text-sm">Напоминания о занятиях</p>
+                              <p className="text-xs text-gray-500">За 15 минут до начала</p>
                             </div>
-                            <div className="flex items-center space-x-2 text-gray-600">
-                              <Icon name="User" className="w-4 h-4" />
-                              <span className="text-sm">{lesson.teacher}</span>
-                            </div>
                           </div>
+                          <Button variant="outline" size="sm">
+                            Настроить
+                          </Button>
                         </div>
-                        <Badge className={getTypeColor(lesson.type)}>{lesson.type}</Badge>
+                      </Card>
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <Icon name="Mail" className="w-5 h-5 text-gray-500" />
+                            <div>
+                              <p className="font-medium text-sm">Email уведомления</p>
+                              <p className="text-xs text-gray-500">Об изменениях расписания</p>
+                            </div>
+                          </div>
+                          <Button variant="outline" size="sm">
+                            Настроить
+                          </Button>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Статистика */}
+                  <div>
+                    <h3 className="font-medium text-gray-900 mb-3">Статистика</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-primary">0</div>
+                        <div className="text-xs text-gray-600">Всего занятий</div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-600">0</div>
+                        <div className="text-xs text-gray-600">Проведено</div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-600">0</div>
+                        <div className="text-xs text-gray-600">Предстоит</div>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-orange-600">0</div>
+                        <div className="text-xs text-gray-600">Изменений</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Состояние пустого расписания */}
+              {!hasSchedule && (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                      <Icon name="CalendarX" className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Расписание пусто</h3>
+                    <p className="text-gray-600 text-center mb-6 max-w-sm">
+                      Пока нет ни одного занятия. Начните с загрузки файла расписания или добавьте занятия вручную.
+                    </p>
+                    <div className="flex space-x-3">
+                      <Button>
+                        <Icon name="Plus" className="w-4 h-4 mr-2" />
+                        Добавить занятие
+                      </Button>
+                      <Button variant="outline">
+                        <Icon name="Upload" className="w-4 h-4 mr-2" />
+                        Загрузить файл
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
 
